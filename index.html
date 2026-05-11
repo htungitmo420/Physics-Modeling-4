@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Интерференция света: опыт Юнга</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="js/config.js" defer></script>
+  <script src="js/dom.js" defer></script>
+  <script src="js/colors.js" defer></script>
+  <script src="js/physics.js" defer></script>
+  <script src="js/ui.js" defer></script>
+  <script src="js/pattern-renderer.js" defer></script>
+  <script src="js/graph-renderer.js" defer></script>
+  <script src="js/schematic-renderer.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <main class="page">
+    <header class="header">
+      <div>
+        <h1>Интерференция света</h1>
+        <p class="lead">Опыт Юнга: светлые и тёмные полосы от двух или трёх когерентных щелей.</p>
+      </div>
+    </header>
+
+    <section class="workspace">
+      <section class="main-panels" aria-label="Визуализация интерференции">
+        <div class="panel">
+          <div class="panel-title">
+            <h2>Интерференционная картина на экране</h2>
+            <span id="colorName">зелёный свет</span>
+          </div>
+          <canvas id="patternCanvas" width="920" height="300" aria-label="Светлые и тёмные интерференционные полосы"></canvas>
+        </div>
+
+        <div class="secondary-panels">
+          <div class="panel">
+            <h2>Интенсивность I(y)</h2>
+            <canvas id="graphCanvas" width="460" height="220" aria-label="График интенсивности от положения на экране"></canvas>
+          </div>
+
+          <div class="panel">
+            <h2>Схема опыта</h2>
+            <canvas id="schematicCanvas" width="460" height="220" aria-label="Схема щелей, расстояния d и расстояния L"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <aside class="controls" aria-label="Параметры модели">
+        <h2>Параметры</h2>
+
+        <label class="control">
+          <span class="hint" title="λ — длина волны света. Чем больше λ, тем дальше друг от друга светлые полосы.">Длина волны λ <strong id="wavelengthValue">550 нм</strong></span>
+          <div class="input-row">
+            <input id="wavelengthInput" type="range" min="380" max="750" step="1" value="550">
+            <input id="wavelengthNumber" type="number" min="380" max="750" step="1" value="550" aria-label="Длина волны">
+          </div>
+        </label>
+
+        <label class="control">
+          <span class="hint" title="d — расстояние между щелями. При увеличении d интерференционные полосы становятся ближе.">Расстояние между щелями d <strong id="slitDistanceValue">0.25 мм</strong></span>
+          <div class="input-row">
+            <input id="slitDistanceInput" type="range" min="0.10" max="1.20" step="0.01" value="0.25">
+            <input id="slitDistanceNumber" type="number" min="0.10" max="1.20" step="0.01" value="0.25" aria-label="Расстояние между щелями">
+          </div>
+        </label>
+
+        <label class="control">
+          <span class="hint" title="L — расстояние от щелей до экрана. При увеличении L полосы расходятся дальше.">Расстояние до экрана L <strong id="screenDistanceValue">1.50 м</strong></span>
+          <div class="input-row">
+            <input id="screenDistanceInput" type="range" min="0.30" max="3.50" step="0.05" value="1.50">
+            <input id="screenDistanceNumber" type="number" min="0.30" max="3.50" step="0.05" value="1.50" aria-label="Расстояние до экрана">
+          </div>
+        </label>
+
+        <label class="control">
+          <span class="hint" title="φ — начальный фазовый сдвиг между источниками. Он смещает всю картину вправо или влево.">Фазовый сдвиг φ <strong id="phaseValue">0.00 рад</strong></span>
+          <div class="input-row">
+            <input id="phaseInput" type="range" min="0" max="6.283" step="0.01" value="0">
+            <input id="phaseNumber" type="number" min="0" max="6.283" step="0.01" value="0" aria-label="Фазовый сдвиг">
+          </div>
+        </label>
+
+        <label class="control">
+          <span class="hint" title="Количество когерентных щелей. Для 3 щелей максимумы становятся уже и резче.">Количество щелей</span>
+          <select id="slitCountInput">
+            <option value="2" selected>2 щели</option>
+            <option value="3">3 щели</option>
+          </select>
+        </label>
+
+        <div class="formula-card">
+          <span class="hint" title="Показан диапазон координаты y на виртуальном экране, для которого строится картина и график.">Текущий масштаб экрана</span>
+          <strong id="screenSpanValue">±8.0 мм</strong>
+        </div>
+
+        <button id="resetButton" type="button">Сбросить</button>
+      </aside>
+    </section>
+
+    <section class="lab-description" aria-label="Описание лабораторной работы">
+      <article>
+        <h2>Физическое явление</h2>
+        <p>
+          Интерференция возникает, когда когерентные световые волны приходят в одну точку экрана с разной фазой.
+          При совпадении фаз волны усиливают друг друга, поэтому появляется светлая полоса. При противоположных фазах
+          волны ослабляют друг друга, и возникает тёмная полоса.
+        </p>
+        <p>
+          Длина волны λ, расстояние между щелями d и расстояние до экрана L определяют расстояние между полосами.
+          Фазовый сдвиг φ смещает всю интерференционную картину.
+        </p>
+      </article>
+
+      <article>
+        <h2>Формулы</h2>
+        <ul class="formula-list">
+          <li><code>δ = d * y / L</code> — разность хода для точки экрана с координатой <code>y</code>.</li>
+          <li><code>Δφ = 2π * δ / λ + φ</code> — разность фаз двух волн.</li>
+          <li><code>I(y) = I0 * cos²(Δφ / 2)</code> — интенсивность для двух щелей.</li>
+          <li><code>λ</code> переводится из нм в м, <code>d</code> — из мм в м.</li>
+          <li>Для трёх щелей модель складывает амплитуды волн: <code>A = Σ cos(phase_i)</code>, <code>I = A²</code>.</li>
+        </ul>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
