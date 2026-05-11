@@ -90,6 +90,23 @@
           </select>
         </label>
 
+        <label class="control">
+          <span class="hint" title="Второй уровень препятствий — дополнительная маска со щелями после первого экрана.">Второй уровень</span>
+          <select id="secondLevelInput">
+            <option value="0" selected>нет</option>
+            <option value="2">2 щели</option>
+            <option value="3">3 щели</option>
+          </select>
+        </label>
+
+        <label class="control" id="secondDistanceControl">
+          <span class="hint" title="d₂ — расстояние между щелями на втором уровне препятствий.">Расстояние d₂ <strong id="secondSlitDistanceValue">0.40 мм</strong></span>
+          <div class="input-row">
+            <input id="secondSlitDistanceInput" type="range" min="0.10" max="1.50" step="0.01" value="0.40">
+            <input id="secondSlitDistanceNumber" type="number" min="0.10" max="1.50" step="0.01" value="0.40" aria-label="Расстояние между щелями второго уровня">
+          </div>
+        </label>
+
         <div class="formula-card">
           <span class="hint" title="Показан диапазон координаты y на виртуальном экране, для которого строится картина и график.">Текущий масштаб экрана</span>
           <strong id="screenSpanValue">±8.0 мм</strong>
@@ -121,6 +138,7 @@
           <li><code>I(y) = I0 * cos²(Δφ / 2)</code> — интенсивность для двух щелей.</li>
           <li><code>λ</code> переводится из нм в м, <code>d</code> — из мм в м.</li>
           <li>Для трёх щелей модель складывает амплитуды волн: <code>A = Σ cos(phase_i)</code>, <code>I = A²</code>.</li>
+          <li>Для второго уровня используется простая маска: <code>I_total = I_1(y) * I_2(y)</code>.</li>
         </ul>
       </article>
     </section>

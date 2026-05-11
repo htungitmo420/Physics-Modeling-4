@@ -117,6 +117,10 @@ button:hover {
   white-space: nowrap;
 }
 
+.control.is-disabled {
+  opacity: 0.5;
+}
+
 .hint {
   cursor: help;
 }

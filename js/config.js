@@ -9,7 +9,9 @@ window.OpticsInterference = window.OpticsInterference || {};
       slitDistanceMm: 0.25,
       screenDistanceM: 1.5,
       phaseRad: 0,
-      slitCount: 2
+      slitCount: 2,
+      secondLevelSlitCount: 0,
+      secondSlitDistanceMm: 0.4
     },
     screenHalfSpanM: 0.008
   };

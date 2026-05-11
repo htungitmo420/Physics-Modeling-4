@@ -10,7 +10,9 @@
       slitDistanceMm: readNumberValue(elements.slitDistanceNumber, elements.slitDistanceInput),
       screenDistanceM: readNumberValue(elements.screenDistanceNumber, elements.screenDistanceInput),
       phaseRad: readNumberValue(elements.phaseNumber, elements.phaseInput),
-      slitCount: Number.parseInt(elements.slitCountInput.value, 10)
+      slitCount: Number.parseInt(elements.slitCountInput.value, 10),
+      secondLevelSlitCount: Number.parseInt(elements.secondLevelInput.value, 10),
+      secondSlitDistanceMm: readNumberValue(elements.secondSlitDistanceNumber, elements.secondSlitDistanceInput)
     };
   }
 
@@ -19,8 +21,10 @@
     elements.slitDistanceValue.textContent = `${params.slitDistanceMm.toFixed(2)} мм`;
     elements.screenDistanceValue.textContent = `${params.screenDistanceM.toFixed(2)} м`;
     elements.phaseValue.textContent = `${params.phaseRad.toFixed(2)} рад (${(params.phaseRad / Math.PI).toFixed(2)}π)`;
+    elements.secondSlitDistanceValue.textContent = `${params.secondSlitDistanceMm.toFixed(2)} мм`;
     elements.screenSpanValue.textContent = `±${(screenHalfSpanM * 1000).toFixed(1)} мм`;
     elements.colorName.textContent = `${namespace.colors.getColorName(params.wavelengthNm)} свет`;
+    updateSecondLevelState(params.secondLevelSlitCount);
   }
 
   function resetControls() {
@@ -33,6 +37,9 @@
     elements.phaseInput.value = defaults.phaseRad;
     elements.phaseNumber.value = defaults.phaseRad;
     elements.slitCountInput.value = String(defaults.slitCount);
+    elements.secondLevelInput.value = String(defaults.secondLevelSlitCount);
+    elements.secondSlitDistanceInput.value = defaults.secondSlitDistanceMm;
+    elements.secondSlitDistanceNumber.value = defaults.secondSlitDistanceMm;
   }
 
   function bindControls(handler) {
@@ -40,7 +47,8 @@
       [elements.wavelengthInput, elements.wavelengthNumber],
       [elements.slitDistanceInput, elements.slitDistanceNumber],
       [elements.screenDistanceInput, elements.screenDistanceNumber],
-      [elements.phaseInput, elements.phaseNumber]
+      [elements.phaseInput, elements.phaseNumber],
+      [elements.secondSlitDistanceInput, elements.secondSlitDistanceNumber]
     ].forEach(([rangeInput, numberInput]) => {
       rangeInput.addEventListener("input", () => {
         numberInput.value = rangeInput.value;
@@ -64,10 +72,19 @@
     });
 
     elements.slitCountInput.addEventListener("change", handler);
+    elements.secondLevelInput.addEventListener("change", handler);
     elements.resetButton.addEventListener("click", () => {
       resetControls();
       handler();
     });
+  }
+
+  function updateSecondLevelState(slitCount) {
+    const isEnabled = slitCount > 0;
+
+    elements.secondDistanceControl.classList.toggle("is-disabled", !isEnabled);
+    elements.secondSlitDistanceInput.disabled = !isEnabled;
+    elements.secondSlitDistanceNumber.disabled = !isEnabled;
   }
 
   function readNumberValue(numberInput, fallbackInput) {

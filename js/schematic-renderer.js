@@ -12,28 +12,50 @@
     const lightColor = namespace.colors.rgbToString(color);
     const centerY = height / 2;
     const sourceX = width * 0.12;
-    const slitX = width * 0.34;
+    const firstSlitX = params.secondLevelSlitCount > 0 ? width * 0.28 : width * 0.34;
+    const secondSlitX = width * 0.52;
     const screenX = width * 0.82;
-    const slitPositions = getSlitPositions(params.slitCount, centerY);
+    const firstSlitPositions = getSlitPositions(params.slitCount, centerY);
+    const secondSlitPositions = getSlitPositions(params.secondLevelSlitCount, centerY);
 
     ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = "#fbfdff";
     ctx.fillRect(0, 0, width, height);
 
     drawSource(ctx, sourceX, centerY, lightColor);
-    drawBarrier(ctx, slitX, centerY, slitPositions, height);
+    drawBarrier(ctx, firstSlitX, centerY, firstSlitPositions, height);
+    if (params.secondLevelSlitCount > 0) {
+      drawBarrier(ctx, secondSlitX, centerY, secondSlitPositions, height);
+    }
     drawScreen(ctx, screenX, centerY, lightColor, params, height);
-    drawLightRays(ctx, sourceX, slitX, screenX, centerY, slitPositions, lightColor);
-    drawMeasurements(ctx, slitX, screenX, slitPositions, height);
+    drawLightRays(
+      ctx,
+      sourceX,
+      firstSlitX,
+      params.secondLevelSlitCount > 0 ? secondSlitX : null,
+      screenX,
+      centerY,
+      firstSlitPositions,
+      secondSlitPositions,
+      lightColor
+    );
+    drawMeasurements(ctx, firstSlitX, secondSlitX, screenX, firstSlitPositions, secondSlitPositions, height, params);
 
     ctx.fillStyle = "#334155";
     ctx.font = "700 12px Segoe UI, Arial, sans-serif";
     ctx.fillText("свет", sourceX - 14, centerY + 72);
-    ctx.fillText("щели", slitX - 12, 28);
+    ctx.fillText("щели 1", firstSlitX - 18, 28);
+    if (params.secondLevelSlitCount > 0) {
+      ctx.fillText("щели 2", secondSlitX - 18, 28);
+    }
     ctx.fillText("экран", screenX - 18, 28);
   }
 
   function getSlitPositions(slitCount, centerY) {
+    if (slitCount <= 0) {
+      return [];
+    }
+
     if (slitCount === 2) {
       return [centerY - 28, centerY + 28];
     }
@@ -101,31 +123,49 @@
     ctx.restore();
   }
 
-  function drawLightRays(ctx, sourceX, slitX, screenX, centerY, slitPositions, lightColor) {
+  function drawLightRays(ctx, sourceX, firstSlitX, secondSlitX, screenX, centerY, firstSlitPositions, secondSlitPositions, lightColor) {
     ctx.save();
     ctx.strokeStyle = lightColor;
     ctx.globalAlpha = 0.48;
     ctx.lineWidth = 1.8;
 
-    slitPositions.forEach(y => {
+    firstSlitPositions.forEach(y => {
       ctx.beginPath();
       ctx.moveTo(sourceX + 14, centerY);
-      ctx.lineTo(slitX - 10, y);
+      ctx.lineTo(firstSlitX - 10, y);
       ctx.stroke();
 
-      ctx.beginPath();
-      ctx.moveTo(slitX + 10, y);
-      ctx.lineTo(screenX - 10, centerY);
-      ctx.stroke();
+      if (secondSlitX !== null) {
+        secondSlitPositions.forEach(secondY => {
+          ctx.beginPath();
+          ctx.moveTo(firstSlitX + 10, y);
+          ctx.lineTo(secondSlitX - 10, secondY);
+          ctx.stroke();
+        });
+      } else {
+        ctx.beginPath();
+        ctx.moveTo(firstSlitX + 10, y);
+        ctx.lineTo(screenX - 10, centerY);
+        ctx.stroke();
+      }
     });
+
+    if (secondSlitX !== null) {
+      secondSlitPositions.forEach(y => {
+        ctx.beginPath();
+        ctx.moveTo(secondSlitX + 10, y);
+        ctx.lineTo(screenX - 10, centerY);
+        ctx.stroke();
+      });
+    }
 
     ctx.restore();
   }
 
-  function drawMeasurements(ctx, slitX, screenX, slitPositions, height) {
-    const firstY = slitPositions[0];
-    const secondY = slitPositions[1];
-    const measureX = slitX - 28;
+  function drawMeasurements(ctx, firstSlitX, secondSlitX, screenX, firstSlitPositions, secondSlitPositions, height, params) {
+    const firstY = firstSlitPositions[0];
+    const secondY = firstSlitPositions[1];
+    const measureX = firstSlitX - 28;
     const arrowY = height - 22;
 
     ctx.save();
@@ -134,13 +174,22 @@
     ctx.lineWidth = 2;
     ctx.font = "700 12px Segoe UI, Arial, sans-serif";
 
-    drawArrow(ctx, measureX, firstY, measureX, secondY);
-    drawArrow(ctx, measureX, secondY, measureX, firstY);
-    ctx.fillText("d", measureX - 18, (firstY + secondY) / 2 + 5);
+    if (firstSlitPositions.length > 1) {
+      drawArrow(ctx, measureX, firstY, measureX, secondY);
+      drawArrow(ctx, measureX, secondY, measureX, firstY);
+      ctx.fillText("d", measureX - 18, (firstY + secondY) / 2 + 5);
+    }
 
-    drawArrow(ctx, slitX + 18, arrowY, screenX - 18, arrowY);
-    drawArrow(ctx, screenX - 18, arrowY, slitX + 18, arrowY);
-    ctx.fillText("L", (slitX + screenX) / 2 - 4, arrowY - 10);
+    if (params.secondLevelSlitCount > 0 && secondSlitPositions.length > 1) {
+      const secondMeasureX = secondSlitX + 28;
+      drawArrow(ctx, secondMeasureX, secondSlitPositions[0], secondMeasureX, secondSlitPositions[1]);
+      drawArrow(ctx, secondMeasureX, secondSlitPositions[1], secondMeasureX, secondSlitPositions[0]);
+      ctx.fillText("d₂", secondMeasureX + 6, (secondSlitPositions[0] + secondSlitPositions[1]) / 2 + 5);
+    }
+
+    drawArrow(ctx, firstSlitX + 18, arrowY, screenX - 18, arrowY);
+    drawArrow(ctx, screenX - 18, arrowY, firstSlitX + 18, arrowY);
+    ctx.fillText("L", (firstSlitX + screenX) / 2 - 4, arrowY - 10);
 
     ctx.restore();
   }
